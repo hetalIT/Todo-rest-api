@@ -22,7 +22,7 @@ describe("POST /Todos",()=>{
                 return done(err);
             Todo.find().then(todos=>{
                 // console.log(JSON.stringify(todos[0],undefined,2));
-                 console.log(todos.length);
+                 //console.log(todos.length);
                  expect(todos[todos.length-1].text).toBe(text);
                 //expect(todos.length).toBe(1);
                 //expect(todos[0].text).toBe(text);
@@ -40,8 +40,22 @@ describe("POST /Todos",()=>{
                 return done(err);
             Todo.find().then(doc=>{
                 //expect(doc.length).toBe(0);
+                //expect(doc.length).toBe(2);
                 done();
             }).catch(e=>done(e));
         });
     });
-})
+});
+describe("GET /todos",()=>{
+    it("should return all todos",done=>{
+        supertest(app).
+        get("/todos").
+        expect(200).
+        end((err,res)=>{
+            if(err)
+                return done(e);
+            //console.log(JSON.stringify(res.body,undefined,2));
+            done();
+        });
+    });
+});
