@@ -4,7 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start":"node server/server",
     "test": "mocha server/**/*.test.js --timeout 10000"
+  },
+  "engines": {
+    "node":"10.16.0"
   },
   "author": "hetap patel",
   "license": "ISC",
