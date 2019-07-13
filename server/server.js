@@ -7,7 +7,7 @@ var {Todo}=require("./models/todo");
 var {usr}=require("./models/user");
 var app=express();
 const port=process.env.PORT||3000;
-console.log(JSON.stringify(port,undefined,2));
+// console.log(JSON.stringify(port,undefined,2));
 app.use(bodyParser.json());
 app.post("/todos",(req,res)=>{
     var todo=new Todo({text:req.body.text});
