@@ -6,7 +6,9 @@ const bodyParser=require("body-parser");
 
 var {mongoose}=require('./db/mongoose');    
 var {Todo}=require("./models/todo");
+
 var {usr}=require("./models/user");
+
 var {authenticate}=require("./middleware/authenticate");
 var app=express();
 const port=process.env.PORT||3000;
