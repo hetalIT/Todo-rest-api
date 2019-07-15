@@ -11,7 +11,7 @@ const {Todo}=require("./../models/todo");
 const todos=[{
     _id:new ObjectId(),text:"first step todo"
 },{
-    _id:new ObjectId(),text:"second step todo"
+    _id:new ObjectId(),text:"second step todo",completed:true,completedAt:222
 }];
 Todo.insertMany(todos);
 describe("POST /Todos",()=>{
@@ -101,24 +101,24 @@ describe("GET /todos",()=>{
 // });
 
 describe("DELETE /todos/:id",()=>{
-    it("should remove a todo",done=>{
-        supertest(app)
-        .delete(`/todos/${todos[0]._id}`)
-        .expect(200)
-        .expect(res=>{
-            //console.log(res.body.todo);console.log(todos[0]);
-            expect(res.body.todo._id).toBe(todos[0]._id.toHexString());
-        })
-        .end((err,res)=>{
-            if(err)
-                return done(err);
-            Todo.findById(res._id).then(doc=>{
-                expect(doc).toBeNull();
-                done();
-            }).catch(e=>done(e));
-            //expect(Todo.findById(res._id)).toNotExist();
-        });
-    });
+    // it("should remove a todo",done=>{
+    //     supertest(app)
+    //     .delete(`/todos/${todos[0]._id}`)
+    //     .expect(200)
+    //     .expect(res=>{
+    //         //console.log(res.body.todo);console.log(todos[0]);
+    //         expect(res.body.todo._id).toBe(todos[0]._id.toHexString());
+    //     })
+    //     .end((err,res)=>{
+    //         if(err)
+    //             return done(err);
+    //         Todo.findById(res._id).then(doc=>{
+    //             expect(doc).toBeNull();
+    //             done();
+    //         }).catch(e=>done(e));
+    //         //expect(Todo.findById(res._id)).toNotExist();
+    //     });
+    // });
 
     it("should return 404 if todo not found",done=>{
         supertest(app)
@@ -131,6 +131,38 @@ describe("DELETE /todos/:id",()=>{
         supertest(app)
         .delete("/todos/5d296953ed83ba51c0ef3a01")
         .expect(404)
+        .end(done);
+    });
+});
+
+describe("PATCH /todos/:id",()=>{
+    it("should update todo",done=>{
+        console.log(todos[1].completed);
+        text="books";
+        supertest(app)
+        .patch(`/todos/${todos[1]._id.toHexString()}`)
+        .send({completed:todos[1].completed,text:text})
+        .expect(200)
+        .expect(res=>{
+            expect(res.body.todo.text).toBe(text);
+            //expect(res.body.todo.completedAt).toBeA('number');
+            expect(res.body.todo.completedAt).not.toBeNaN();
+            expect(res.body.todo.completed).toBe(true);
+        })
+        .end(done);
+    });
+    it("should set null to completedAt when todo is not done",done=>{
+        text="demo";
+        supertest(app)
+        .patch(`/todos/${todos[0]._id.toHexString()}`)
+        .send({completed:false,text:text})
+        .expect(200)
+        .expect(res=>{
+            //console.log(JSON.stringify(res.body.todo,undefined,2));
+            expect(res.body.todo.completed).toBe(false);
+            expect(res.body.todo.completedAt).toBeNull();
+            expect(res.body.todo.completedAt).not.toBeTruthy();
+        })
         .end(done);
     });
 });
