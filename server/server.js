@@ -7,6 +7,7 @@ const bodyParser=require("body-parser");
 var {mongoose}=require('./db/mongoose');    
 var {Todo}=require("./models/todo");
 var {usr}=require("./models/user");
+var {authenticate}=require("./middleware/authenticate");
 var app=express();
 const port=process.env.PORT||3000;
 // console.log(JSON.stringify(port,undefined,2));
@@ -30,6 +31,11 @@ app.post("/users",(req,res)=>{
     }).catch(err=>{
         res.status(404).send(err);
     });
+});
+//=================================================verigy user=========================================================//
+
+app.get('/users/me',authenticate,(req,res)=>{
+    res.send(req.user);
 });
 app.get("/todos",(req,res)=>{
     Todo.find().then((todos)=>{

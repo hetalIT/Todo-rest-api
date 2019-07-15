@@ -50,6 +50,28 @@ UserSchema.methods.toJSON=function(){
     var userObject=user.toObject();
     return _.pick(userObject,['_id','email']);
 };
+
+UserSchema.statics.findByToken=function(token){
+    var user=this;
+    var decoded;
+    try
+    {
+        decoded=jwt.verify(token,'abc123');
+        //console.log(decoded);
+    }
+    catch(e){
+        //return Promise.reject();
+        return new Promise((resolve,reject)=>{
+            reject();
+        });
+    };
+    return usr.findOne({
+        '_id':decoded._id,
+        'tokens.token':token,
+        'tokens.access':'auth'
+    });
+};
+
 var usr=mongoose.model('user',UserSchema);
 module.exports={usr};
 // var {Todo}=require("./todo");
