@@ -74,7 +74,6 @@ UserSchema.statics.findByToken=function(token){
 };
 UserSchema.pre("save",function(next){
     var user=this;
-    console.log("pre");
     if(user.isModified("password"))
     {
         bcrypt.genSalt(10,(err,salt)=>{

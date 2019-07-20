@@ -4,15 +4,11 @@ const {ObjectId}=require("mongodb");
 
 const {app}=require("./../server.js");
 const {Todo}=require("./../models/todo");
-
+const {todos,users,populateUsers}=require("./seed/seed");
+beforeEach(populateUsers);
 // beforeEach(done=>{
 //     Todo.remove({}).then(()=>{done();});
 // });
-const todos=[{
-    _id:new ObjectId(),text:"first step todo"
-},{
-    _id:new ObjectId(),text:"second step todo",completed:true,completedAt:222
-}];
 Todo.insertMany(todos);
 describe("POST /Todos",()=>{
     it("should a new todo work",done=>{
@@ -137,7 +133,6 @@ describe("DELETE /todos/:id",()=>{
 
 describe("PATCH /todos/:id",()=>{
     it("should update todo",done=>{
-        console.log(todos[1].completed);
         text="books";
         supertest(app)
         .patch(`/todos/${todos[1]._id.toHexString()}`)
@@ -162,6 +157,71 @@ describe("PATCH /todos/:id",()=>{
             expect(res.body.todo.completed).toBe(false);
             expect(res.body.todo.completedAt).toBeNull();
             expect(res.body.todo.completedAt).not.toBeTruthy();
+        })
+        .end(done);
+    });
+});
+
+describe("GET /users/me",()=>{
+    it("should return user if authenticated",done=>{
+        supertest(app)
+        .get("/users/me")
+        .set("x-auth",users[0].tokens[0].token)
+        .expect(200)
+        .expect(res=>{
+            expect(res.body._id).toBe(users[0]._id.toHexString());
+            expect(res.body.email).toBe(users[0].email);
+        })
+        .end(done);
+    });
+
+    it("should return 401 if not authenticated",(done)=>{
+        supertest(app)
+        .get('/users/me')
+        .expect(401)
+        .expect(res=>{
+            expect(res.body).toEqual({});
+        })
+        .end(done);
+    });
+});
+describe("POST /users",()=>{
+    it("should create user",done=>{
+        var email="nehal@gmail.com";
+        var password="nehal123";
+        supertest(app)
+        .post("/users")
+        .send({email,password})
+        .expect(200)
+        .expect(res=>{
+            expect(res.headers['x-auth']).toBeTruthy();
+            expect(res.body.email).toBe(email);
+        })
+        .end(done);
+    });
+
+    it("should return validations err if request is invalid",done=>{
+        var email="nehalgmail.com";
+        var password="nehal123";
+        supertest(app)
+        .post("/users")
+        .send({email,password})
+        .expect(404)
+        .expect(res=>{
+            expect(res.body).toEqual({});
+        })
+        .end(done);
+    });
+
+    it("should return err if email id already exist",done=>{
+        var email="nil@gmail.com";
+        var password="nehal123";
+        supertest(app)
+        .post("/users")
+        .send({email,password})
+        .expect(404)
+        .expect(res=>{
+            expect(res.body).toEqual({});
         })
         .end(done);
     });
