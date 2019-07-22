@@ -106,7 +106,6 @@ app.delete('/todos/:id',authenticate,(req,res)=>{
  app.patch("/todos/:id",authenticate,(req,res)=>{
     var id=req.params.id;
     var body=_.pick(req.body,['text','completed']);
-    console.log(body);
     if(!ObjectId.isValid(id))
     {
         //console.log("id:",id);

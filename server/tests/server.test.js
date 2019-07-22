@@ -181,7 +181,7 @@ describe("PATCH /todos/:id",()=>{
     it("should not update other user's todo",done=>{
         text="books";
         supertest(app)
-        .patch(`/todos/${todos[0]._id.toHexString()}`)
+        .patch(`/todos/${todos[1]._id.toHexString()}`)
         .set({'x-auth':users[0].tokens[0].token})
         .send({completed:todos[0].completed,text:text})
         .expect(404)
